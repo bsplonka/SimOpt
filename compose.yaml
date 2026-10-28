@@ -1,0 +1,23 @@
+# One compose file for macOS, Linux and Windows (arm64 and x86_64). The viewers
+# are shown in the browser at http://localhost:6080, so the host needs no X
+# server. See README.md for how to use it.
+name: mujoco-lab
+
+services:
+  mujoco:
+    build:
+      context: ./docker
+      args:
+        # IDs of the container user. On Linux they must be yours (set them in
+        # .env, see README), elsewhere the defaults are fine.
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+    image: mujoco-lab:3.17.0
+    init: true
+    ports:
+      - "127.0.0.1:6080:6080"  # noVNC, reachable from this machine only
+    volumes:
+      - ./exercises:/workspace  # shared with the host: edit here, run there
+    environment:
+      - SCREEN_SIZE=1280x720
+      # - SCREEN_SIZE=1900x1080

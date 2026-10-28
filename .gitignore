@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+
+# Written by MuJoCo next to the running script on warnings and errors
+MUJOCO_LOG.TXT
+
+# macOS
+.DS_Store
+
+# Local settings (Linux user IDs, see README)
+.env

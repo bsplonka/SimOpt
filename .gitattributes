@@ -1,0 +1,5 @@
+# Text files are checked out with LF line endings on every OS, also on Windows:
+# the scripts run inside the Linux container, where `/bin/sh` fails on CRLF.
+* text=auto eol=lf
+
+*.stl binary
