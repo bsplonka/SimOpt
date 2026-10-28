@@ -10,3 +10,4 @@ MUJOCO_LOG.TXT
 
 # Local settings (Linux user IDs, see README)
 .env
+exercises/*

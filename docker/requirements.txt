@@ -34,6 +34,10 @@ six==1.17.0
 tzdata==2026.5
 packaging==26.3
 
+# bioptim and biorbd_casadi also come from build_wheels.sh. biorbd_casadi 1.12.4
+# is compiled against exactly this casadi version (it also brings Ipopt).
+casadi==3.8.1
+
 # Browser <-> VNC bridge for the noVNC display (its optional plugin
 # dependencies are not needed).
 websockify==0.13.0

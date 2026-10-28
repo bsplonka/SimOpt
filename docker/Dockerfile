@@ -1,8 +1,10 @@
-# MuJoCo and biorbd/bioviz with a browser-based display (noVNC). Builds and
-# runs natively on arm64 and x86_64, on macOS, Linux and Windows hosts.
+# MuJoCo, biorbd/bioviz and bioptim with a browser-based display (noVNC).
+# Builds and runs natively on arm64 and x86_64, on macOS, Linux and Windows
+# hosts.
 
-# Wheels for biorbd, ezc3d and bioviz (see build_wheels.sh). Build tools stay
-# in this stage and do not end up in the final image.
+# Wheels for biorbd, biorbd_casadi, ezc3d, bioviz and bioptim (see
+# build_wheels.sh). Build tools stay in this stage and do not end up in the
+# final image.
 FROM python:3.14.10-slim-trixie AS wheels
 COPY build_wheels.sh /tmp/build_wheels.sh
 RUN sh /tmp/build_wheels.sh

@@ -4,6 +4,7 @@ Exercise environment for the course *Simulation and Optimization in Robotics and
 Biomechanics*. It is a single Docker container with everything the exercises need:
 
 - **biorbd** and **bioviz** for biomechanical models
+- **bioptim** for optimal control (with CasADi and Ipopt)
 - **MuJoCo** for physics simulation
 
 Using a container means, that everyone is using the same setup and no one needs to install anything but the container once. 
@@ -33,7 +34,7 @@ docker compose up -d --build
 ```
 
 The first start builds the container and takes a few minutes. On ARM processors (Apple
-silicon Macs, Windows on Arm, ARM Linux) it takes about 10 minutes, because biorbd is
+silicon Macs, Windows on Arm, ARM Linux) it takes about 15 minutes, because biorbd is
 compiled there. Later starts take a few seconds.
 
 **3. Open the display**
@@ -42,7 +43,7 @@ Open **http://localhost:6080** in your browser. The page stays black until a vie
 
 **4. Run a simulation**
 
-The MuJoCo viewer with the TIAGo Pro arm of exercise 1:
+The MuJoCo viewer with the TIAGo Pro arm (folder `01_inverse_kinematics`):
 
 ```bash
 docker compose exec mujoco python -m mujoco.viewer --mjcf=01_inverse_kinematics/models/tiago_pro_arm/scene.xml
@@ -54,14 +55,17 @@ A biorbd model in bioviz (an animated human model):
 docker compose exec mujoco python bioviz_demo/demo.py
 ```
 
-Your own scripts run the same way. Paths are relative to the `exercises/` folder:
+The exercises and your own scripts run the same way. Paths are relative to the
+`exercises/` folder:
 
 ```bash
-docker compose exec mujoco python 01_inverse_kinematics/my_script.py
+docker compose exec mujoco python bioviz_demo/demo.py
 ```
 
-The window appears in the browser tab. To close it, press `Ctrl+C` in the terminal.
-After `Ctrl+C`, bioviz prints a `KeyboardInterrupt` message, which is expected.
+The window appears in the browser tab. Some programs open several windows (bioptim shows
+one per plot): the arrow at the left of the title bar lists them all. To close everything,
+press `Ctrl+C` in the terminal.
+After `Ctrl+C`, bioviz and bioptim print a `KeyboardInterrupt` message, which is expected.
 
 **5. Stop the container**
 
@@ -144,6 +148,8 @@ Then continue with [How to run](#how-to-run), and run all commands in PowerShell
 | Port 6080 already in use | In `compose.yaml`, change `127.0.0.1:6080:6080` to e.g. `127.0.0.1:6081:6080` and open http://localhost:6081 |
 | Image too small or blurry, or bioviz looks cramped | Change `SCREEN_SIZE` in `compose.yaml`, e.g. to `1920x1080`. The browser scales the image to fit the window. Larger sizes render more slowly. |
 | Viewer feels sluggish | The container renders on the CPU, because Docker has no access to the graphics card. Keep shadows and reflections off: they are disabled in the scene, and switching them on under **Rendering** in the viewer costs about 3× the frame time. |
+| bioptim script ends without an error message (e.g. exercise 9) | The container ran out of memory. Exercise 9 needs about 7 GB. Raise Docker's memory limit: in Docker Desktop under Settings → Resources (on Windows with WSL 2, set `memory=` in `%UserProfile%\.wslconfig`). Or use fewer shooting nodes (`n_shooting`). |
+| bioptim script stops with `The X11 connection broke` | Remove `import bioviz` from the top of the script. It opens a window connection that the live optimization plot cannot share. bioptim loads bioviz by itself for `sol.animate()`. |
 | `Permission denied` for files in `/workspace` (Linux) | Create `.env` as described under [Linux](#linux). On Fedora and other systems with SELinux, also change the volume in `compose.yaml` to `./exercises:/workspace:z`. |
 
 ## Repository layout
@@ -151,10 +157,10 @@ Then continue with [How to run](#how-to-run), and run all commands in PowerShell
 ```
 compose.yaml       how to start the container (the same on every platform)
 docker/            Dockerfile, entrypoint and pinned Python requirements;
-                   build_wheels.sh builds biorbd/ezc3d/bioviz where PyPI has no package
+                   build_wheels.sh builds biorbd/ezc3d/bioviz/bioptim where PyPI has no package
 exercises/         your code: shared with the container as /workspace
   01_inverse_kinematics/
-                   exercise 1, with the TIAGo Pro arm model
+                   MuJoCo inverse kinematics, with the TIAGo Pro arm model
   bioviz_demo/     bioviz example (model from the bioviz repository, MIT license)
 tools/             build_tiago_pro_arm.py: regenerates the TIAGo Pro arm model
                    from PAL Robotics' official repository (pinned commit)
